@@ -75,6 +75,13 @@ class PackageCommand extends Command
     protected $path = '';
 
     /**
+     * Command options that make files.
+     *
+     * @var array
+     */
+    protected $makeFiles = ['config','middleware','migration','model','routes','facade','policy','requests','seed','test'];
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -129,10 +136,9 @@ class PackageCommand extends Command
 
     protected function callOptions() 
     {
-        $options = $this->option();
-
-        foreach($options as $o) {
-            $this->line($o);
+        foreach($this->option() as $k => $v) {
+            if ( in_array($k,$this->makeFiles) && $v === 'yes' )
+                $this->line($k);            
         }
     }
 }
