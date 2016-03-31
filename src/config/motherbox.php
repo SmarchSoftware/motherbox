@@ -13,7 +13,6 @@ return [
     */ 
 	'vendor'	=> 'smarch',
 	'name'		=> 'ballon',
-	'namespace' => 'smarch\bluet',
 	'author'	=> 'SmarchSoftware',
 	'email'		=> 'packages@smarchsoftware.com',
 

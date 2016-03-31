@@ -143,16 +143,16 @@ class PackageCommand extends Command
         }
         $this->makeDirectory($this->packagePath);
 
-        $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}'], [$this->author,$this->email]);
+        $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
         $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
         $this->makeFile('config.stub', 'config.php', [], [], 'Config');
-        $this->makeFile('controller.stub', 'controller.php', ['{{rootNamespace}}'], [$this->laravel->getNamespace()], 'Controllers');
+        $this->makeFile('controller.stub', $this->capName.'Controller.php', ['{{rootNamespace}}', '{{lcNamePlural}}'], [$this->laravel->getNamespace(),str_plural($this->name)], 'Controllers');
 
     }
 
     protected function makeReplaceWords()
     {
-        $this->replaceWords = [$this->package, $this->vendor, $this->name, ucfirst($this->vendor), ucfirst($this->name), $this->namespace, $this->capNamespace];
+        $this->replaceWords = [$this->package, $this->vendor, $this->name, $this->capVendor, $this->capName, $this->namespace, $this->capNamespace];
 
     }
 
@@ -193,6 +193,9 @@ class PackageCommand extends Command
         $this->vendor = ($v) ?: ( config('motherbox.vendor') ?: $this->ask('Name of the vendor for your composer package?') );
         $this->name = ($n) ?: ( config('motherbox.name') ?: $this->ask('Name of your composer package?') );
         $this->package = strtolower($this->vendor . '/'. $this->name);
+
+        $this->capName = ucwords($this->name);
+        $this->capVendor = ucwords($this->vendor);
         
         if ($this->confirm("Please confirm you would like this vendor/name combination : " . $this->package)) {
             return;

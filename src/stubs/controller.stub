@@ -8,13 +8,13 @@ use {{rootNamespace}}Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-use {{capNamespace}}\Models\{{modelName}};
+use {{capNamespace}}\Models\{{capName}};
 use {{capNamespace}}\Requests\StoreRequest;
 use {{capNamespace}}\Requests\UpdateRequest;
 
 use Smarch\Omac\OmacTrait;
 
-class DummyClass extends Controller
+class {{capName}}Controller extends Controller
 {
 
     use OmacTrait;
@@ -30,9 +30,9 @@ class DummyClass extends Controller
      * @param string $unauthorized  Which view to use
      */
     public function __construct() {
-        $this->acl = config('{{crudNameSingular}}.acl.enable');
-        $this->driver = config('{{crudNameSingular}}.acl.driver');
-        $this->unauthorized = config('{{crudNameSingular}}.views.unauthorized');
+        $this->acl = config('{{name}}.acl.enable');
+        $this->driver = config('{{name}}.acl.driver');
+        $this->unauthorized = config('{{name}}.views.unauthorized');
     }
 
     /**
@@ -42,12 +42,12 @@ class DummyClass extends Controller
      */
     public function index()
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.index') ) ) {
-            $resources = {{modelName}}::paginate( config('{{crudNameSingular}}.pagination', 15) );
-            return view( config('{{crudNameSingular}}.views.index'), compact('resources') );
+        if ( $this->checkAccess( config('{{name}}.acl.index') ) ) {
+            $resources = {{capName}}::paginate( config('{{name}}.pagination', 15) );
+            return view( config('{{name}}.views.index'), compact('resources') );
         }
 
-        return view( $this->unauthorized, ['message' => 'view {{modelName}} list'] );
+        return view( $this->unauthorized, ['message' => 'view {{lcNamePlural}} list'] );
     }
 
     /**
@@ -57,11 +57,11 @@ class DummyClass extends Controller
      */
     public function create()
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.create') ) ) {
-            return view( config('{{crudNameSingular}}.views.create') );
+        if ( $this->checkAccess( config('{{name}}.acl.create') ) ) {
+            return view( config('{{name}}.views.create') );
         }
 
-        return view( $this->unauthorized, ['message' => 'create new {{crudName}}'] );
+        return view( $this->unauthorized, ['message' => 'create new {{lcNamePlural}}'] );
     }
 
     /**
@@ -71,14 +71,14 @@ class DummyClass extends Controller
      */
     public function store(StoreRequest $request)
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.create') ) ) {
-            {{modelName}}::create($request->all());        
-            return redirect()->route('{{crudNameSingular}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{crudNameSingular}} created.", 'level' => "success"] ] );
+        if ( $this->checkAccess( config('{{name}}.acl.create') ) ) {
+            {{capName}}::create($request->all());        
+            return redirect()->route('{{name}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{name}} created.", 'level' => "success"] ] );
         }
 
-        return redirect()->route('{{crudNameSingular}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to create {{crudName}}", 'level' => "danger"] ] );
+        return redirect()->route('{{name}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to create {{lcNamePlural}}", 'level' => "danger"] ] );
     }
 
     /**
@@ -90,13 +90,13 @@ class DummyClass extends Controller
      */
     public function show($id)
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.show') ) ) {
-            $resource = {{modelName}}::findOrFail($id);
+        if ( $this->checkAccess( config('{{name}}.acl.show') ) ) {
+            $resource = {{capName}}::findOrFail($id);
             $show = "1";
-            return view( config('{{crudNameSingular}}.views.edit'), compact('resource', 'show') );
+            return view( config('{{name}}.views.edit'), compact('resource', 'show') );
         }
 
-        return view( $this->unauthorized, ['message' => 'view existing {{crudName}}'] );
+        return view( $this->unauthorized, ['message' => 'view existing {{lcNamePlural}}'] );
     }
 
     /**
@@ -108,13 +108,13 @@ class DummyClass extends Controller
      */
     public function edit($id)
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.edit') ) ) {
-            $resource = {{modelName}}::findOrFail($id);
+        if ( $this->checkAccess( config('{{name}}.acl.edit') ) ) {
+            $resource = {{capName}}::findOrFail($id);
             $show = "0";
-            return view( config('{{crudNameSingular}}.views.edit'), compact('resource', 'show') );
+            return view( config('{{name}}.views.edit'), compact('resource', 'show') );
         }
 
-        return view( $this->unauthorized, [ 'message' => 'edit existing {{crudName}}'] );
+        return view( $this->unauthorized, [ 'message' => 'edit existing {{lcNamePlural}}'] );
     }
 
     /**
@@ -126,15 +126,15 @@ class DummyClass extends Controller
      */
     public function update($id, UpdateRequest $request)
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.edit') ) ) {
-            ${{crudNameSingular}} =  {{modelName}}::findOrFail($id);      
-            ${{crudNameSingular}}->update($request->all());        
-            return redirect()->route('{{crudNameSingular}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{modelName}} edited.", 'level' => "success"] ] );   
+        if ( $this->checkAccess( config('{{name}}.acl.edit') ) ) {
+            ${{name}} =  {{capName}}::findOrFail($id);      
+            ${{name}}->update($request->all());        
+            return redirect()->route('{{name}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} edited.", 'level' => "success"] ] );   
         }
 
-        return redirect()->route('{{crudNameSingular}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to edit {{crudName}}.", 'level' => "danger"] ] );
+        return redirect()->route('{{name}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to edit {{lcNamePlural}}.", 'level' => "danger"] ] );
     }
 
     /**
@@ -146,14 +146,14 @@ class DummyClass extends Controller
      */
     public function destroy($id)
     {
-        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.destroy') ) ) {
-            {{modelName}}::destroy($id);
-            return redirect()->route('{{crudNameSingular}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{modelName}} deleted.", 'level' => "warning"] ] );
+        if ( $this->checkAccess( config('{{name}}.acl.destroy') ) ) {
+            {{capName}}::destroy($id);
+            return redirect()->route('{{name}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} deleted.", 'level' => "warning"] ] );
         }
 
-        return redirect()->route('{{crudNameSingular}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to destroy {{crudName}}.", 'level' => "danger"] ] );
+        return redirect()->route('{{name}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to destroy {{lcNamePlural}}.", 'level' => "danger"] ] );
     }
 
 }
