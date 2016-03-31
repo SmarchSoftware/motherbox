@@ -2,6 +2,7 @@
 
 namespace Smarch\Motherbox\Commands;
 
+use File, Storage;
 use Illuminate\Console\Command;
 
 class PackageCommand extends Command
@@ -11,25 +12,25 @@ class PackageCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:package
+    protected $signature = 'package:generate
                             {name? : The name of the package.}
                             {vendor? : The vendor name of the package.}
                             {namespace? : Custom Namespace for your package?}
                             {path? : Path for all your package files?}
-                            {--C|config=yes : Include a config file? [yes/no]}
-                            {--M|migration=yes : Include a migration file? [yes/no]}
-                            {--O|model=yes : Include a model file? [yes/no]}
-                            {--R|routes=yes : Include a routes.php file in package? [yes/no]}
-                            {--F|facade=no : Include a laravel facade file? [yes/no]}
-                            {--I|middleware=no : Include a custom middleware file? [yes/no]}
-                            {--P|policy=no : Include a custom policy file? [yes/no]}
-                            {--E|requests=no : Include form request validation files in package? [yes/no]}
-                            {--S|seed=no : Include a database seed file? [yes/no]}
-                            {--T|test=no : Include PhpUnit Test file? [yes/no]}
+                            {--C|config= : Include a config file? [yes/no]}
+                            {--M|migration= : Include a migration file? [yes/no]}
+                            {--O|model= : Include a model file? [yes/no]}
+                            {--R|routes= : Include a routes.php file in package? [yes/no]}
+                            {--F|facade= : Include a laravel facade file? [yes/no]}
+                            {--I|middleware= : Include a custom middleware file? [yes/no]}
+                            {--P|policy= : Include a custom policy file? [yes/no]}
+                            {--E|requests= : Include form request validation files in package? [yes/no]}
+                            {--S|seed= : Include a database seed file? [yes/no]}
+                            {--T|test= : Include PhpUnit Test file? [yes/no]}
                             {--fields= : Fields name for the form(s) & model.}
-                            {--pk=id : The name of the primary key.}
-                            {--author=vendor : Package author name for composer.}
-                            {--email= name@vendor.com : Package author email for composer.}
+                            {--pk= : The name of the primary key.}
+                            {--author= : Package author name for composer.}
+                            {--email= : Package author email for composer.}
                             ';
 
     /**
@@ -68,11 +69,25 @@ class PackageCommand extends Command
     protected $namespace = '';
 
     /**
-     * The path for the package files
+     * The base path to the packages
      *
      * @var string
      */
     protected $path = '';
+
+    /**
+     * The path for this package files
+     *
+     * @var string
+     */
+    protected $packagePath = '';
+
+    /**
+     * The path for this package src files
+     *
+     * @var string
+     */
+    protected $srcPath = '';
 
     /**
      * Command options that make files.
@@ -80,6 +95,20 @@ class PackageCommand extends Command
      * @var array
      */
     protected $makeFiles = ['config','middleware','migration','model','routes','facade','policy','requests','seed','test'];
+
+    /**
+     * Stub strings to replace.
+     *
+     * @var array
+     */
+    protected $searchWords = ['{{package}}','{{vendor}}','{{name}}','{capVendor}}','{{capName}}','{{namespace}}','{{capNamespace}}'];
+
+    /**
+     * Stub replacement strings.
+     *
+     * @var array
+     */
+    protected $replaceWords = [];
 
     /**
      * Create a new command instance.
@@ -100,19 +129,59 @@ class PackageCommand extends Command
     {
         $this->makeVendorName( $this->argument('vendor'), $this->argument('name') );
         $this->makeNamespace();
-        $this->makePath();
+        $this->makePaths();
+        $this->getOptions();
+
+        $this->makeReplaceWords();
+
+        $this->makePackageDirectory();
+
+        $this->makeComposer();
 
         $this->callOptions();
+    }
 
-        $this->line('Package name is '.$this->package);
-        $this->line('Namespace is '.$this->namespace);
-        $this->line('Path is '.$this->path);
+    protected function makeReplaceWords()
+    {
+        $this->replaceWords = [$this->package, $this->vendor, $this->name, ucfirst($this->vendor), ucfirst($this->name), $this->namespace, $this->capNamespace];
+
+    }
+
+    protected function makePackageDirectory()
+    {
+        if ( ! File::isDirectory($this->packagePath) ) {
+            $this->line($this->packagePath);
+            mkdir($this->packagePath);
+        }
+    }
+
+    protected function makeComposer()
+    {
+        $search = array_push($this->searchWords,'{{author}}','{{email}}');
+        $replace = array_push($this->replaceWords,$this->author,$this->email);
+        $composerStub = $this->stubPath . '\composer.json.stub';
+        $composerFile = $this->packagePath . '\composer.json';
+
+        Storage::put( $composerFile, str_replace( $search, $replace, Storage::get($composerStub) ) );
+    }
+
+    protected function getOptions()
+    {
+        foreach($this->option() as $k => $v) {
+            $this->$k = ($v) ?: config('motherbox.'.$k);
+            $this->line($k .'='.$this->$k);            
+        }
+    }
+
+    protected function callOptions() 
+    {
+        $this->call('package:config', [ 'name' => $this->name, 'path' => $this->srcPath ]);
     }
 
     protected function makeVendorName($v='',$n='')
     {
         $this->vendor = ($v) ?: ( config('motherbox.vendor') ?: $this->ask('Name of the vendor for your composer package?') );
-        $this->name = ($n) ?: $this->ask('Name of your composer package?');;
+        $this->name = ($n) ?: ( config('motherbox.name') ?: $this->ask('Name of your composer package?') );
         $this->package = strtolower($this->vendor . '\\'. $this->name);
         
         if ($this->confirm("Please confirm you would like this vendor\\name combination : " . $this->package)) {
@@ -125,20 +194,16 @@ class PackageCommand extends Command
 
     protected function makeNamespace()
     {
-        $this->namespace = ($this->argument('namespace')) ?: ucwords($this->vendor) . '\\'. ucwords($this->name);        
+        $this->namespace = ($this->argument('namespace')) ?:  ( config('motherbox.namespace') ?: ucwords($this->vendor) . '\\'. ucwords($this->name) );
+        $this->capNamespace = ucwords($this->namespace);
     }
 
 
-    protected function makePath()
+    protected function makePaths()
     {
-        $this->path = ($this->argument('path')) ?: (config('motherbox.path') ?: '\\'.$this->package);
-    }
-
-    protected function callOptions() 
-    {
-        foreach($this->option() as $k => $v) {
-            if ( in_array($k,$this->makeFiles) && $v === 'yes' )
-                $this->line($k);            
-        }
+        $this->path = base_path() . '/' . ( ( $this->argument('path') ) ?: ( config('motherbox.path') ?: $this->package ) );
+        $this->packagePath = $this->path . '\\' . $this->package;
+        $this->srcPath = $this->packagePath . '/src';
+        $this->stubPath = __DIR__.'/../stubs';
     }
 }

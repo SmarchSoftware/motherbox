@@ -1,0 +1,23 @@
+{
+    "name": "{{package}}",
+    "description": "",
+    "type": "package",
+    "homepage": "https://github.com/{{vendor}}/{{name}}",
+    "keywords": ["{{name}}", "laravel"],
+    "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "~5.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "{{author}}",
+            "email": "{{email}}"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "{{ucVendor}}\\{{ucName}}\\": "src/"
+        }
+    }
+}
