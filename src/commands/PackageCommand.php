@@ -2,7 +2,7 @@
 
 namespace Smarch\Motherbox\Commands;
 
-use File, Storage;
+use File;
 use Illuminate\Console\Command;
 
 class PackageCommand extends Command
@@ -101,7 +101,7 @@ class PackageCommand extends Command
      *
      * @var array
      */
-    protected $searchWords = ['{{package}}','{{vendor}}','{{name}}','{capVendor}}','{{capName}}','{{namespace}}','{{capNamespace}}'];
+    protected $searchWords = ['{{package}}','{{vendor}}','{{name}}','{{capVendor}}','{{capName}}','{{namespace}}','{{capNamespace}}'];
 
     /**
      * Stub replacement strings.
@@ -127,18 +127,27 @@ class PackageCommand extends Command
      */
     public function handle()
     {
-        $this->makeVendorName( $this->argument('vendor'), $this->argument('name') );
+        $this->makeVendorName( strtolower( $this->argument('vendor') ), strtolower( $this->argument('name') ) );
         $this->makeNamespace();
         $this->makePaths();
         $this->getOptions();
-
         $this->makeReplaceWords();
+        $this->makeDirectory($this->path);
 
-        $this->makePackageDirectory();
+        if ( File::isDirectory($this->packagePath) ) {
+            $this->error("Package already exists!");
+            if (! $this->confirm("Please confirm you would like to overwrite this package.") ) {
+                $this->line("Halted!");
+                return;
+            }
+        }
+        $this->makeDirectory($this->packagePath);
 
-        $this->makeComposer();
+        $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}'], [$this->author,$this->email]);
+        $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
+        $this->makeFile('config.stub', 'config.php', [], [], 'Config');
+        $this->makeFile('controller.stub', 'controller.php', ['{{rootNamespace}}'], [$this->laravel->getNamespace()], 'Controllers');
 
-        $this->callOptions();
     }
 
     protected function makeReplaceWords()
@@ -147,44 +156,45 @@ class PackageCommand extends Command
 
     }
 
-    protected function makePackageDirectory()
-    {
-        if ( ! File::isDirectory($this->packagePath) ) {
-            $this->line($this->packagePath);
-            mkdir($this->packagePath);
+    protected function makeDirectory($path)
+    {        
+        if ( ! File::isDirectory($path) ) {
+            File::makeDirectory($path, 0755, true);
         }
     }
 
-    protected function makeComposer()
+    protected function makeFile($stub, $file, $search=[], $replace=[], $folder='')
     {
-        $search = array_push($this->searchWords,'{{author}}','{{email}}');
-        $replace = array_push($this->replaceWords,$this->author,$this->email);
-        $composerStub = $this->stubPath . '\composer.json.stub';
-        $composerFile = $this->packagePath . '\composer.json';
+        $s = array_merge($this->searchWords, $search);
+        $r = array_merge($this->replaceWords, $replace);
 
-        Storage::put( $composerFile, str_replace( $search, $replace, Storage::get($composerStub) ) );
+        $path = $this->packagePath;
+        if ($folder) {
+            $path = $this->srcPath . '/' . $folder;
+            $this->makeDirectory($path);    
+        }
+     
+        $stubFile = $this->stubPath . '/' . $stub;
+        $newFile = $path . '/' . $file;
+
+        File::copy($stubFile, $newFile);
+        File::put($newFile, str_replace($s, $r, File::get($newFile) ) );
     }
 
     protected function getOptions()
     {
         foreach($this->option() as $k => $v) {
             $this->$k = ($v) ?: config('motherbox.'.$k);
-            $this->line($k .'='.$this->$k);            
         }
-    }
-
-    protected function callOptions() 
-    {
-        $this->call('package:config', [ 'name' => $this->name, 'path' => $this->srcPath ]);
     }
 
     protected function makeVendorName($v='',$n='')
     {
         $this->vendor = ($v) ?: ( config('motherbox.vendor') ?: $this->ask('Name of the vendor for your composer package?') );
         $this->name = ($n) ?: ( config('motherbox.name') ?: $this->ask('Name of your composer package?') );
-        $this->package = strtolower($this->vendor . '\\'. $this->name);
+        $this->package = strtolower($this->vendor . '/'. $this->name);
         
-        if ($this->confirm("Please confirm you would like this vendor\\name combination : " . $this->package)) {
+        if ($this->confirm("Please confirm you would like this vendor/name combination : " . $this->package)) {
             return;
         }
 
@@ -195,7 +205,7 @@ class PackageCommand extends Command
     protected function makeNamespace()
     {
         $this->namespace = ($this->argument('namespace')) ?:  ( config('motherbox.namespace') ?: ucwords($this->vendor) . '\\'. ucwords($this->name) );
-        $this->capNamespace = ucwords($this->namespace);
+        $this->capNamespace = implode( '\\', array_map('ucwords', explode('\\',$this->namespace) ) );
     }
 
 

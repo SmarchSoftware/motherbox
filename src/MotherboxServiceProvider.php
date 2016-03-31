@@ -30,12 +30,7 @@ class MotherboxServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/Config/motherbox.php','motherbox');
 
         $this->commands(
-            Commands\PackageCommand::class,
-            Commands\PackageConfigCommand::class /*
-            'Smarch\Motherbox\Commands\PackageControllerCommand',
-            'Smarch\Motherbox\Commands\PackageModelCommand',
-            'Smarch\Motherbox\Commands\PackageMigrationCommand',
-            'Smarch\Motherbox\Commands\PackageViewCommand'*/
+            Commands\PackageCommand::class
         );
     }
 }

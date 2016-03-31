@@ -11,8 +11,8 @@ return [
     | in this file.
     |
     */ 
-	'vendor'	=> 'asdf',
-	'name'		=> 'fdsa',
+	'vendor'	=> 'smarch',
+	'name'		=> 'ballon',
 	'namespace' => 'smarch\bluet',
 	'author'	=> 'SmarchSoftware',
 	'email'		=> 'packages@smarchsoftware.com',

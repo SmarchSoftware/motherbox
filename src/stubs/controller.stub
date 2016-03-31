@@ -1,0 +1,159 @@
+<?php
+
+namespace {{capNamespace}}\Controllers;
+
+use {{rootNamespace}}Http\Requests;
+use {{rootNamespace}}Http\Controllers\Controller;
+
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+use {{capNamespace}}\Models\{{modelName}};
+use {{capNamespace}}\Requests\StoreRequest;
+use {{capNamespace}}\Requests\UpdateRequest;
+
+use Smarch\Omac\OmacTrait;
+
+class DummyClass extends Controller
+{
+
+    use OmacTrait;
+
+    var $acl = false;
+    var $driver = 'laravel';
+
+    /**
+     * constructor
+     * 
+     * @param boolean $acl          Whether or not ACL is enabled
+     * @param string $driver        Which ACL package to use
+     * @param string $unauthorized  Which view to use
+     */
+    public function __construct() {
+        $this->acl = config('{{crudNameSingular}}.acl.enable');
+        $this->driver = config('{{crudNameSingular}}.acl.driver');
+        $this->unauthorized = config('{{crudNameSingular}}.views.unauthorized');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.index') ) ) {
+            $resources = {{modelName}}::paginate( config('{{crudNameSingular}}.pagination', 15) );
+            return view( config('{{crudNameSingular}}.views.index'), compact('resources') );
+        }
+
+        return view( $this->unauthorized, ['message' => 'view {{modelName}} list'] );
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create()
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.create') ) ) {
+            return view( config('{{crudNameSingular}}.views.create') );
+        }
+
+        return view( $this->unauthorized, ['message' => 'create new {{crudName}}'] );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store(StoreRequest $request)
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.create') ) ) {
+            {{modelName}}::create($request->all());        
+            return redirect()->route('{{crudNameSingular}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{crudNameSingular}} created.", 'level' => "success"] ] );
+        }
+
+        return redirect()->route('{{crudNameSingular}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to create {{crudName}}", 'level' => "danger"] ] );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return Response
+     */
+    public function show($id)
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.show') ) ) {
+            $resource = {{modelName}}::findOrFail($id);
+            $show = "1";
+            return view( config('{{crudNameSingular}}.views.edit'), compact('resource', 'show') );
+        }
+
+        return view( $this->unauthorized, ['message' => 'view existing {{crudName}}'] );
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return Response
+     */
+    public function edit($id)
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.edit') ) ) {
+            $resource = {{modelName}}::findOrFail($id);
+            $show = "0";
+            return view( config('{{crudNameSingular}}.views.edit'), compact('resource', 'show') );
+        }
+
+        return view( $this->unauthorized, [ 'message' => 'edit existing {{crudName}}'] );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     *
+     * @return Response
+     */
+    public function update($id, UpdateRequest $request)
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.edit') ) ) {
+            ${{crudNameSingular}} =  {{modelName}}::findOrFail($id);      
+            ${{crudNameSingular}}->update($request->all());        
+            return redirect()->route('{{crudNameSingular}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{modelName}} edited.", 'level' => "success"] ] );   
+        }
+
+        return redirect()->route('{{crudNameSingular}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to edit {{crudName}}.", 'level' => "danger"] ] );
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        if ( $this->checkAccess( config('{{crudNameSingular}}.acl.destroy') ) ) {
+            {{modelName}}::destroy($id);
+            return redirect()->route('{{crudNameSingular}}.index')
+                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{modelName}} deleted.", 'level' => "warning"] ] );
+        }
+
+        return redirect()->route('{{crudNameSingular}}.index')
+            ->with( ['flash' => ['message' => "You are not permitted to destroy {{crudName}}.", 'level' => "danger"] ] );
+    }
+
+}
