@@ -289,14 +289,17 @@ class PackageCommand extends Command
 
     protected function makeMigration() 
     {
-        // $this->makeFile('migration.stub', 'migration.php', [], [], 'Migrations');
+        $this->table = ($this->table) ?: str_plural($this->name);
+        $this->pk = ($this->pk) ?: 'id';
+        $name = date('Y_m_d_His') . '_create_'.$this->table.'_table.php';
+        $this->makeFile('migration.stub', $name, ['{{capTable}}','{{table}}', '{{pk}}'], [ucfirst($this->table), $this->table, $this->pk], 'Migrations');
     }
 
 
     protected function makeModel() 
     {
-        $this->table = ($this->option('table')) ?: ( config('motherbox.table') ?: str_plural($this->name) );
-        $this->pk = ($this->option('pk')) ?: ( config('motherbox.pk') ?: 'id' );
+        $this->table = ($this->table) ?: str_plural($this->name);
+        $this->pk = ($this->pk) ?: 'id';
         $fillable = str_replace(',', "','", ( $this->option('fillable') ) ?: ( "'" . config('motherbox.fillable') . "'" ?: '' ) );
         $guarded = str_replace(',', "','", ( $this->option('guarded') ) ?: ( "'" . config('motherbox.guarded') . "'" ?: '' ) );
 
@@ -331,6 +334,6 @@ class PackageCommand extends Command
 
     protected function makeTest() 
     {
-        // $this->makeFile('test.stub', $this->capName.'Test.php', [], [], 'Tests');
+        $this->makeFile('test.stub', $this->capName.'.php', [], [], 'Tests');
     }
 }

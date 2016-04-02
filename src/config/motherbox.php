@@ -65,7 +65,7 @@ return [
     |
     */
 	'table'		=> '',
-	'pk'		=> 'id',
+	'pk'		=> '',
 	'fields'	=> ''
 
 ];
