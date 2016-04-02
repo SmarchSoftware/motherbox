@@ -281,6 +281,12 @@ class PackageCommand extends Command
     }
 
 
+    protected function makeMiddleware() 
+    {
+        $this->makeFile('middleware.stub', $this->capName.'Middleware.php', [], [], 'Middleware');
+    }
+
+
     protected function makeMigration() 
     {
         // $this->makeFile('migration.stub', 'migration.php', [], [], 'Migrations');
@@ -290,23 +296,24 @@ class PackageCommand extends Command
     protected function makeModel() 
     {
         $this->table = ($this->option('table')) ?: ( config('motherbox.table') ?: str_plural($this->name) );
+        $this->pk = ($this->option('pk')) ?: ( config('motherbox.pk') ?: 'id' );
         $fillable = str_replace(',', "','", ( $this->option('fillable') ) ?: ( "'" . config('motherbox.fillable') . "'" ?: '' ) );
         $guarded = str_replace(',', "','", ( $this->option('guarded') ) ?: ( "'" . config('motherbox.guarded') . "'" ?: '' ) );
 
-        $this->makeFile('model.stub', $this->capName . '.php', ['{{table}}', '{{fillable}}', '{{guarded}}'], [$this->table, $fillable, $guarded], 'Models');
+        $this->makeFile('model.stub', $this->capName . '.php', ['{{table}}', '{{fillable}}', '{{guarded}}', '{{pk}}'], [$this->table, $fillable, $guarded, $this->pk], 'Models');
     }
 
 
     protected function makePolicy() 
     {
-        // $this->makeFile('policy.stub', $this->capName.'Policy.php', [], [], 'Policies');
+        $this->makeFile('policy.stub', $this->capName.'Policy.php', [], [], 'Policies');
     }
 
 
     protected function makeRequests() 
     {
-        // $this->makeFile('storeRequest.stub', $this->capName.'StoreRequest.php', [], [], 'Requests');
-        // $this->makeFile('updateRequest.stub', $this->capName.'UpdateRequest.php', [], [], 'Requests');
+        $this->makeFile('storeRequest.stub', 'StoreRequest.php', ['{{table}}','{{pk}}'], [$this->table, $this->pk ], 'Requests');
+        $this->makeFile('updateRequest.stub', 'UpdateRequest.php', ['{{table}}','{{pk}}'], [$this->table, $this->pk], 'Requests');
     }
 
 

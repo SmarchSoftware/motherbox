@@ -46,12 +46,12 @@ return [
 	'migration' => 'yes',
 	'model' => 'yes',
 	'routes' => 'yes',
-	'facade' => 'no',
-	'middleware' => 'no',
-	'policy' => 'no',
-	'requests' => 'no',
+	'facade' => 'yes',
+	'middleware' => 'yes',
+	'policy' => 'yes',
+	'requests' => 'yes',
 	'seed' => 'yes',
-	'test' => 'no',
+	'test' => 'yes',
 
 
     /*

@@ -1,0 +1,20 @@
+<?php
+
+namespace {{capNamespace}}\Policies;
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class {{capName}}
+{
+    use HandlesAuthorization;
+
+    /**
+     * Create a new policy instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
+}

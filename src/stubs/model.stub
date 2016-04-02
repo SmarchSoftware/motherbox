@@ -28,4 +28,12 @@ class {{capName}} extends Model
      */
     protected $guarded = [{{guarded}}];
 
+
+    /**
+     * The database table primary key.
+     *
+     * @var string
+     */
+    protected $primaryKey = '{{pk}}';
+
 }

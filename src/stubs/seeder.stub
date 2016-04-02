@@ -15,7 +15,7 @@ class {{capName}}TableSeeder extends Seeder
      */
     public function run()
     {
-        // currencies
+        // add resources to insert here
         $resources = [];
         
         // insert resources
