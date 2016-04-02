@@ -1,0 +1,25 @@
+<?php
+
+namespace {{capNamespace}}\Seeds;
+
+use DB;
+
+use Illuminate\Database\Seeder;
+
+class {{capName}}TableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // currencies
+        $resources = [];
+        
+        // insert resources
+        DB::table('{{table}}')->insert($resources);
+    }
+        
+}

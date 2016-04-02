@@ -41,18 +41,17 @@ return [
     | in this file.
     |
     */ 
-	'make'		=> [
-		'config' => 'yes',
-		'migration' => 'yes',
-		'model' => 'yes',
-		'routes' => 'yes',
-		'facade' => 'no',
-		'middleware' => 'no',
-		'policy' => 'no',
-		'requests' => 'no',
-		'seed' => 'no',
-		'test' => 'no',
-	],
+	'config' => 'yes',
+    'controller' => 'yes',
+	'migration' => 'yes',
+	'model' => 'yes',
+	'routes' => 'yes',
+	'facade' => 'no',
+	'middleware' => 'no',
+	'policy' => 'no',
+	'requests' => 'no',
+	'seed' => 'yes',
+	'test' => 'no',
 
 
     /*
@@ -67,7 +66,6 @@ return [
     */
 	'table'		=> '',
 	'pk'		=> 'id',
-	'fields'	=> '',
-	'fillable'	=> '',
+	'fields'	=> ''
 
 ];
