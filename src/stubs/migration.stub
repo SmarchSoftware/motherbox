@@ -11,14 +11,14 @@ class Create{{capTable}}Table extends Migration
      * @return void
      */
     public function up()
-    {
-        
-            Schema::create('{{table}}', function(Blueprint $table) {
-                $table->increments('{{pk}}');
-                {{fields}}
-                $table->timestamps();
-            });
+    {        
+        Schema::create('{{table}}', function(Blueprint $table) {
+            $table->increments('{{pk}}');
+
+{{fields}}
             
+            $table->timestamps();
+        });            
     }
 
     /**

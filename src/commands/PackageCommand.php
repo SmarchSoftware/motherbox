@@ -289,10 +289,11 @@ class PackageCommand extends Command
 
     protected function makeMigration() 
     {
+        $this->makeSchema();
         $this->table = ($this->table) ?: str_plural($this->name);
         $this->pk = ($this->pk) ?: 'id';
         $name = date('Y_m_d_His') . '_create_'.$this->table.'_table.php';
-        $this->makeFile('migration.stub', $name, ['{{capTable}}','{{table}}', '{{pk}}'], [ucfirst($this->table), $this->table, $this->pk], 'Migrations');
+        $this->makeFile('migration.stub', $name, ['{{capTable}}','{{table}}', '{{pk}}', '{{fields}}'], [ ucfirst($this->table), $this->table, $this->pk,$this->schema], 'Migrations');
     }
 
 
@@ -335,5 +336,24 @@ class PackageCommand extends Command
     protected function makeTest() 
     {
         $this->makeFile('test.stub', $this->capName.'.php', [], [], 'Tests');
+    }
+
+
+    protected function makeSchema()
+    {
+        $result = '';
+        $fields = explode(',',$this->fields);
+        foreach($fields as $field) {
+            $bits = explode(':', $field);
+            $type = trim($bits[0]);
+            $name = trim($bits[1]);
+            $result .= "\t\t\t".'$table->'.$type."('".$name."')";
+            for($i=2;$i<count($bits);$i++) {
+                $result .='->'.$bits[$i].'()';
+            }
+            $result .= ";\n";
+        }
+
+        $this->schema = substr($result,0,-1);
     }
 }
