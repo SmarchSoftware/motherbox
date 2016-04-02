@@ -1,0 +1,33 @@
+@extends( config('{{name}}.layout') )
+
+@section( config('{{name}}.section') )
+
+    <h1>{{ ( ($show == '0') ? 'Edit' : 'Viewing' ) }}  {{ $resource->name }}</h1>
+    <hr/>
+
+    {!! Form::model($resource, ['method' => 'PATCH', 'route' => [  config('{{name}}.route.as') . 'update', $resource->id ], 'class' => 'form-horizontal']) !!}
+    {!! Form::hidden('id', $resource->id) !!}    
+
+    {{formFields}}
+
+    <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-3">
+           @if ($show == '0')
+            {!! Form::submit('Edit', ['class' => 'btn btn-primary form-control']) !!}
+            </div>
+
+            <div class="col-sm-offset-2 col-sm-3">
+            {!! Form::open(['method'=>'delete','route'=> [ config('{{name}}.route.as') . 'destroy', $resource->id] ]) !!}
+              <button type="submit" class="btn btn-danger">
+                <i class="fa fa-trash-o fa-lg"></i> Delete
+              </button>
+            {!! Form::close() !!}
+            </div>
+           @else
+                <i class="fa fa-pencil"></i> 
+                <a href="{{ route( config('{{name}}.route.as') . 'edit', $resource->id) }}" title="Edit '{{ $resource->name }}'">Edit '{{ $resource->name }}'</a>
+           @endif
+        </div>    
+    </div>
+
+@endsection

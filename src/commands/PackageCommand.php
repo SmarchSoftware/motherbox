@@ -163,6 +163,7 @@ class PackageCommand extends Command
         $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
         $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
         $this->makeOptions();
+        $this->makeViews();
     }
 
 
@@ -341,6 +342,12 @@ class PackageCommand extends Command
 
     protected function makeSchema()
     {
+        $this->schema = '';
+        
+        if ( empty($this->fields) ) {
+            return;
+        }
+
         $result = '';
         $fields = explode(',',$this->fields);
         foreach($fields as $field) {
@@ -355,5 +362,11 @@ class PackageCommand extends Command
         }
 
         $this->schema = substr($result,0,-1);
+    }
+
+
+    protected function makeViews()
+    {
+
     }
 }

@@ -1,0 +1,58 @@
+@extends( config('{{name}}.layout') )
+
+@section( config('{{name}}.section') )
+
+    <h1><i class="fa fa-cog fa-fw"></i> {{ config('{{name}}.title', '{{capName}}') }}
+    <div class="btn-group pull-right" role="group" aria-label="..."> 
+      
+        <a href="{{ route( config('{{name}}.route.as') . 'create') }}">
+        <button type="button" class="btn btn-info">
+          <i class="fa fa-plus fa-fw"></i> 
+          <span class="hidden-xs hidden-sm">Add New {{capName}}</span>
+        </button></a>
+      
+    </div>
+    </h1>
+
+    <div class="table">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    {{indexHeaders}}<th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($resources as $item)
+                <tr>
+                    {{indexFields}}
+                
+                    <td>
+                        <a href="{{ route( config('{{name}}.route.as') . 'show', $item->id) }}">
+                          <button type="button" class="btn btn-primary btn-xs">
+                          <i class="fa fa-search fa-fw"></i> 
+                          <span class="hidden-xs hidden-sm">View</span>
+                          </button></a>
+
+                        <a href="{{ route( config('{{name}}.route.as') . 'edit', $item->id) }}">
+                          <button type="button" class="btn btn-default btn-xs">
+                          <i class="fa fa-pencil fa-fw"></i> 
+                          <span class="hidden-xs hidden-sm">Edit</span>
+                          </button></a>
+
+                        {!! Form::open(['method'=>'delete','route'=> [ config('{{name}}.route.as') . 'destroy',$item->id], 'style' => 'display:inline']) !!}
+                          <button type="submit" class="btn btn-danger btn-xs">
+                          <i class="fa fa-trash-o fa-lg"></i> 
+                          <span class="hidden-xs hidden-sm">Delete</span>
+                          </button>
+                        {!! Form::close() !!}
+                    </td>
+                </tr>
+              @empty
+                <tr><td>There are no {{name}}</td></tr>
+              @endforelse
+            </tbody>
+        </table>
+        <div class="pagination"> {!! $resources->render() !!} </div>
+    </div>
+
+@endsection
