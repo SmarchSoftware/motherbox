@@ -396,11 +396,34 @@ class PackageCommand extends Command
     protected function getFieldStub($type)
     {
         switch ($type) {
+            case 'bigInteger':
+            case 'decimal':
+            case 'double':
+            case 'float':
+            case 'mediumInteger':
+            case 'smallInteger':
+            case 'tinyInteger':
             case 'integer':
             case 'numeric':
                 $result = 'numeric';
                 break;
             
+            case 'binary':
+                $result = 'textarea';
+                break;
+
+            case 'boolean':
+                $result = 'boolean';
+                break;
+
+            case 'date':
+            case 'dateTime':
+            case 'time':
+            case 'timestamp':
+                $result = 'date';
+                break;
+
+            case 'uuid':
             default:
                 $result = 'text';
                 break;
