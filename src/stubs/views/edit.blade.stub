@@ -6,7 +6,6 @@
     <hr/>
 
     {!! Form::model($resource, ['method' => 'PATCH', 'route' => [  config('{{name}}.route.as') . 'update', $resource->id ], 'class' => 'form-horizontal']) !!}
-    {!! Form::hidden('id', $resource->id) !!}    
 
     {{formFields}}
 

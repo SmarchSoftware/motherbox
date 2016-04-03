@@ -343,6 +343,7 @@ class PackageCommand extends Command
     protected function makeSchema()
     {
         $this->schema = '';
+        $this->formFields = '';
         
         if ( empty($this->fields) ) {
             return;
@@ -357,8 +358,14 @@ class PackageCommand extends Command
             $result .= "\t\t\t".'$table->'.$type."('".$name."')";
             for($i=2;$i<count($bits);$i++) {
                 $result .='->'.$bits[$i].'()';
+                if ($bits[$i] === 'required') {
+                    $required = ", 'required' => 'required'";
+                }
             }
             $result .= ";\n";
+            
+            $this->formFields .= $this->makeField($name, $type, $required);
+            $name = $type = $required = '';
         }
 
         $this->schema = substr($result,0,-1);
@@ -367,6 +374,38 @@ class PackageCommand extends Command
 
     protected function makeViews()
     {
+        $this->makeFile('views\create.blade.stub', 'create.blade.php', ['{{formFields}}'], [trim($this->formFields)], 'Views');
+        // $this->makeFile('views\edit.blade.stub', 'edit.blade.php', ['{{formFields}}'], [$this->formFields], 'Views');
+        // $this->makeFile('views\index.blade.stub', 'index.blade.php', ['{{formFields}}'], [$this->formFields], 'Views');
 
+    }
+
+
+    protected function makeField($name, $type, $required='', $search=[], $replace=[] )
+    {
+        $s = array_merge($this->searchWords, [ '{{fName}}', '{{fcapName}}', '{{required}}' ] );
+        $r = array_merge($this->replaceWords, [ $name, ucfirst($name), $required ] );
+
+        $stub = $this->getFieldStub($type);
+        $fieldStubFile = $this->stubPath . '/' . $stub;
+
+        return str_replace($s, $r, File::get($fieldStubFile) );
+    }
+
+
+    protected function getFieldStub($type)
+    {
+        switch ($type) {
+            case 'integer':
+            case 'numeric':
+                $result = 'numeric';
+                break;
+            
+            default:
+                $result = 'text';
+                break;
+        }
+
+        return 'views\\'. $result .'.field.stub';
     }
 }
