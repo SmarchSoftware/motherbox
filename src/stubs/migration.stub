@@ -11,14 +11,16 @@ class Create{{capTable}}Table extends Migration
      * @return void
      */
     public function up()
-    {        
-        Schema::create('{{table}}', function(Blueprint $table) {
-            $table->increments('{{pk}}');
+    {
+        if (! Schema::hasTable('{{table}}')) {
+            Schema::create('{{table}}', function(Blueprint $table) {
+                $table->increments('{{pk}}');
 
-{{fields}}
-            
-            $table->timestamps();
-        });            
+    {{fields}}
+                
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -28,7 +30,9 @@ class Create{{capTable}}Table extends Migration
      */
     public function down()
     {
-        Schema::drop('{{table}}');
+        if (Schema::hasTable('{{table}}')) {
+            Schema::drop('{{table}}');
+        }
     }
 
 }

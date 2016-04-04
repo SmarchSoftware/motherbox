@@ -1,0 +1,54 @@
+<?php
+
+namespace {{capNamespace}};
+
+use Illuminate\Support\ServiceProvider;
+
+class {{capName}}ServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap the application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        // load the views
+        $this->loadViewsFrom(__DIR__.'/Views', '{{name}}');
+
+        /**
+         * Publish package files
+         */
+        
+        // views
+        $this->publishes([
+            __DIR__.'/Views' => base_path('resources/views/vendor/{{name}}')
+        ], 'views');
+
+        // migrations
+        $this->publishes([
+            __DIR__.'/migrations' => $this->app->databasePath().'/migrations'
+        ], 'migrations');
+
+        // config
+        $this->publishes([
+            __DIR__.'/Config/{{name}}.php' => config_path('{{name}}.php')
+        ], 'config');
+    }
+
+    /**
+     * Register the application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        // Merge config files
+        $this->mergeConfigFrom(__DIR__.'/Config/{{name}}.php','{{name}}');
+
+        // load our routes
+        if (! $this->app->routesAreCached()) {
+            require __DIR__.'/routes.php';
+        }
+    }
+}

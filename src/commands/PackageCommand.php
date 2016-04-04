@@ -122,6 +122,13 @@ class PackageCommand extends Command
     protected $table = '';
 
     /**
+     * The model fillable fields.
+     *
+     * @var string
+     */
+    protected $fillable = '';
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -153,7 +160,7 @@ class PackageCommand extends Command
                 return;
             }
             if (File::deleteDirectory($this->packagePath) ){
-                $this->line('Deleted previous package directory.');
+                $this->line('<info>Deleted: </info>Previous existing package directory.');
             } else {
                 $this->error('Unable to delete previous package directory.');
             }
@@ -162,8 +169,11 @@ class PackageCommand extends Command
 
         $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
         $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
+
         $this->makeOptions();
         $this->makeViews();
+
+        $this->makeServiceProvider();
     }
 
 
@@ -251,9 +261,9 @@ class PackageCommand extends Command
 
         if ( File::copy($stubFile, $newFile)) {
             if ( File::put($newFile, str_replace($s, $r, File::get($newFile) ) ) ){
-                $this->line('Successfully created "' . $folder . '/' . $file . '"');
+                $this->line("<info>Created:</info> $folder/$file");
             } else {
-                $this->error('Unable to create "' . $folder . '/' . $file . '"');
+                $this->line("<error>Error Creating:</error> $folder . '/' . $file");
             }
         } else {
             $this->error('Unable to copy "' . $stub . '" to "' . $folder . '/' . $file . '"');
@@ -263,7 +273,13 @@ class PackageCommand extends Command
 
     protected function makeConfig() 
     {
-        $this->makeFile('config.stub', 'config.php', [], [], 'Config');
+        $this->makeFile('config.stub', $this->name.'.php', [], [], 'Config');
+    }
+
+
+    protected function makeServiceProvider() 
+    {
+        $this->makeFile('provider.stub', 'src/'.$this->capName.'ServiceProvider.php');
     }
 
 
@@ -295,6 +311,7 @@ class PackageCommand extends Command
         $this->pk = ($this->pk) ?: 'id';
         $name = date('Y_m_d_His') . '_create_'.$this->table.'_table.php';
         $this->makeFile('migration.stub', $name, ['{{capTable}}','{{table}}', '{{pk}}', '{{fields}}'], [ ucfirst($this->table), $this->table, $this->pk,$this->schema], 'Migrations');
+        $this->call('migrate',['--path'=>'packages\smarch\\'.$this->name.'\src\Migrations']);
     }
 
 
@@ -302,10 +319,8 @@ class PackageCommand extends Command
     {
         $this->table = ($this->table) ?: str_plural($this->name);
         $this->pk = ($this->pk) ?: 'id';
-        $fillable = str_replace(',', "','", ( $this->option('fillable') ) ?: ( "'" . config('motherbox.fillable') . "'" ?: '' ) );
-        $guarded = str_replace(',', "','", ( $this->option('guarded') ) ?: ( "'" . config('motherbox.guarded') . "'" ?: '' ) );
 
-        $this->makeFile('model.stub', $this->capName . '.php', ['{{table}}', '{{fillable}}', '{{guarded}}', '{{pk}}'], [$this->table, $fillable, $guarded, $this->pk], 'Models');
+        $this->makeFile('model.stub', $this->capName . '.php', ['{{table}}', '{{fillable}}', '{{pk}}'], [$this->table, substr($this->fillable,0,-1), $this->pk], 'Models');
     }
 
 
@@ -324,7 +339,7 @@ class PackageCommand extends Command
 
     protected function makeRoutes() 
     {
-        $this->makeFile('routes.stub', 'routes.php');
+        $this->makeFile('routes.stub', 'src/routes.php');
     }
 
 
@@ -355,6 +370,7 @@ class PackageCommand extends Command
             $bits = explode(':', $field);
             $type = trim($bits[0]);
             $name = trim($bits[1]);
+            $this->fillable .= "'".$name."',";
             $result .= "\t\t\t".'$table->'.$type."('".$name."')";
             for($i=2;$i<count($bits);$i++) {
                 $result .='->'.$bits[$i].'()';
@@ -441,6 +457,6 @@ class PackageCommand extends Command
                 break;
         }
 
-        return 'views\\'. $result .'.field.stub';
+        return 'views/'. $result .'.field.stub';
     }
 }

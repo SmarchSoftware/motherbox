@@ -26,7 +26,7 @@ class {{capName}} extends Model
      *
      * @var array
      */
-    protected $guarded = [{{guarded}}];
+    protected $guarded = [];
 
 
     /**
