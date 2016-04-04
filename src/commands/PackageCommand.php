@@ -375,7 +375,7 @@ class PackageCommand extends Command
     protected function makeViews()
     {
         $this->makeFile('views\create.blade.stub', 'create.blade.php', ['{{formFields}}'], [trim($this->formFields)], 'Views');
-        // $this->makeFile('views\edit.blade.stub', 'edit.blade.php', ['{{formFields}}'], [$this->formFields], 'Views');
+        $this->makeFile('views\edit.blade.stub', 'edit.blade.php', ['{{formFields}}'], [trim($this->formFields)], 'Views');
         // $this->makeFile('views\index.blade.stub', 'index.blade.php', ['{{formFields}}'], [$this->formFields], 'Views');
 
     }
