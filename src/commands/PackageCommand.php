@@ -400,15 +400,16 @@ class PackageCommand extends Command
             case 'decimal':
             case 'double':
             case 'float':
+            case 'integer':
             case 'mediumInteger':
             case 'smallInteger':
             case 'tinyInteger':
-            case 'integer':
-            case 'numeric':
                 $result = 'numeric';
                 break;
             
             case 'binary':
+            case 'longtext':
+            case 'mediumtext':
                 $result = 'textarea';
                 break;
 
@@ -420,10 +421,21 @@ class PackageCommand extends Command
             case 'dateTime':
             case 'time':
             case 'timestamp':
-                $result = 'date';
-                break;
+            //    $result = 'dateTime';
+            //    break;
+
+            case 'json':
+            case 'jsonb':
+            //    $result = 'json';
+            //    break;
 
             case 'uuid':
+            //    $result = 'uuid';
+            //    break;
+
+            case 'char':
+            case 'string':
+            case 'text':           
             default:
                 $result = 'text';
                 break;
