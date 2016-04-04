@@ -17,6 +17,11 @@ class MotherboxServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/Config/motherbox.php' => config_path('motherbox.php')
         ], 'config');
+
+        // stubs
+        $this->publishes([
+            __DIR__.'/stubs' => base_path('resources/motherbox/stubs/'),
+        ], 'stubs');
     }
 
     /**

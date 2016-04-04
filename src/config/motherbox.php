@@ -1,6 +1,33 @@
 <?php
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Stubs path
+    |--------------------------------------------------------------------------
+    |
+    | If you want to customize the stub files used, you can configure the
+    | path to those files here.
+    |
+    */
+    'stub_path' => base_path('resources/motherbox/stubs/'),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base Package Path.
+    |--------------------------------------------------------------------------
+    |
+    | Where your package files should be stored. Relative to your base_path().
+    |
+    | i.e. a package called "My\Package" with a path of 'workbench' would
+    | have all it's files in "<root>\workbench\my\package\src\"
+    |
+    */ 
+    'path'      => 'packages',
+
+
     /*
     |--------------------------------------------------------------------------
     | Composer requirements
@@ -15,20 +42,6 @@ return [
 	'name'		=> 'ballon',
 	'author'	=> 'SmarchSoftware',
 	'email'		=> 'packages@smarchsoftware.com',
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Base Path.
-    |--------------------------------------------------------------------------
-    |
-    | Where your package files should be stored. Relative to your base_path().
-    |
-    | i.e. a package called "My\Package" with a path of 'workbench' would
-    | have all it's files in "<root>\workbench\my\package\src\"
-    |
-    */ 
-	'path'		=> 'packages',
 
 
     /*

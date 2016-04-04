@@ -149,9 +149,6 @@ class PackageCommand extends Command
         $this->makeVendorName( strtolower( $this->argument('vendor') ), strtolower( $this->argument('name') ) );
         $this->makeNamespace();
         $this->makePaths();
-        $this->getOptions();
-        $this->makeReplaceWords();
-        $this->makeDirectory($this->path);
 
         if ( File::isDirectory($this->packagePath) ) {
             $this->error("Package already exists!");
@@ -160,11 +157,22 @@ class PackageCommand extends Command
                 return;
             }
             if (File::deleteDirectory($this->packagePath) ){
-                $this->line('<info>Deleted: </info>Previous existing package directory.');
+                $this->line('<info>Deleted: </info>Previous existing package directory.');        
+                $this->line('----------------------------------');
             } else {
                 $this->error('Unable to delete previous package directory.');
             }
         }
+
+        $this->line('<info>Root Packages Path: </info> '.$this->path);
+        $this->line('<info>Package Path: </info> '.$this->packagePath);
+        $this->line('<info>PSR4-Src Path: </info> '.$this->srcPath);
+        $this->line('<info>Stubs Path: </info> '.$this->stubPath);
+        $this->line('----------------------------------');
+
+        $this->getOptions();
+        $this->makeReplaceWords();
+        $this->makeDirectory($this->path);
         $this->makeDirectory($this->packagePath);
 
         $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
@@ -206,7 +214,13 @@ class PackageCommand extends Command
         $this->path = base_path() . '/' . ( ( $this->argument('path') ) ?: ( config('motherbox.path') ?: $this->package ) );
         $this->packagePath = $this->path . '\\' . $this->package;
         $this->srcPath = $this->packagePath . '/src';
-        $this->stubPath = __DIR__.'/../stubs';
+        $this->stubPath = config('motherbox.stub_path') ?: __DIR__.'/../stubs';
+        if ( ! File::isDirectory($this->stubPath) ) {
+            if (! File::isDirectory($this->stubPath = __DIR__.'/../stubs') ) {
+                $this->error('No stub files found at specified stub path : '.$this->stubPath);
+                exit;
+            }
+        }
     }
 
 
@@ -366,11 +380,12 @@ class PackageCommand extends Command
 
         $result = '';
         $fields = explode(',',$this->fields);
+        $j = 0;
+        $this->indexHeaders = $this->indexFields = '';
         foreach($fields as $field) {
             $bits = explode(':', $field);
             $type = trim($bits[0]);
             $name = trim($bits[1]);
-            $this->fillable .= "'".$name."',";
             $result .= "\t\t\t".'$table->'.$type."('".$name."')";
             for($i=2;$i<count($bits);$i++) {
                 $result .='->'.$bits[$i].'()';
@@ -379,8 +394,23 @@ class PackageCommand extends Command
                 }
             }
             $result .= ";\n";
+
+            $this->fillable .= "'".$name."',";
             
             $this->formFields .= $this->makeField($name, $type, $required);
+            
+            if ($j <= 2 ) {
+                $j++;
+                $this->indexHeaders .= "\t<th>".$name."</th>\n";
+                $html = '<td class="hidden-xs hidden-sm">{{ $item->'.$name.' }}</td>';
+                if ($j == 0) {
+                    $html = '<td>
+                      <a href="{{ url('.$this->name.', $item->id) }}">{{ $item->'.$name.' }}</a>
+                    </td>';
+                }
+                $this->indexFields .= $html;
+            }
+
             $name = $type = $required = '';
         }
 
@@ -392,8 +422,7 @@ class PackageCommand extends Command
     {
         $this->makeFile('views\create.blade.stub', 'create.blade.php', ['{{formFields}}'], [trim($this->formFields)], 'Views');
         $this->makeFile('views\edit.blade.stub', 'edit.blade.php', ['{{formFields}}'], [trim($this->formFields)], 'Views');
-        // $this->makeFile('views\index.blade.stub', 'index.blade.php', ['{{formFields}}'], [$this->formFields], 'Views');
-
+        $this->makeFile('views\index.blade.stub', 'index.blade.php', ['{{indexHeaders}}','{{indexFields}}'], [$this->indexHeaders,$this->indexFields], 'Views');
     }
 
 
