@@ -1,0 +1,17 @@
+<div class="form-group {{ $errors->has('{{fName}}') ? 'has-error' : ''}}">
+    	{!! Form::label('{{fName}}', '{{fcapName}}: ', ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-6">
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-sm btn-primary">
+                {!! Form::radio('{{fName}}',1, null, ['class' => 'form-control'] ) !!} Yes
+              </label>
+
+              <label class="btn btn-sm btn-primary">
+                {!! Form::radio('{{fName}}',0, null, ['class' => 'form-control'] ) !!} No
+              </label>              
+            </div>
+        </div>      
+        {!! $errors->first('{{fName}}', '<div class="col-sm-6 col-sm-offset-3 text-danger">:message</div>') !!}
+    </div>
+
+	
