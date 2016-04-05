@@ -136,6 +136,8 @@ class PackageCommand extends Command
     public function __construct()
     {
         parent::__construct();
+        // empty variables needed for stubs string replacements
+        $this->indexHeaders = $this->indexFields = $this->storeFields = $this->updateFields = '';
     }
 
 
@@ -171,6 +173,11 @@ class PackageCommand extends Command
         $this->line('----------------------------------');
 
         $this->getOptions();
+
+        $this->table = ($this->table) ?: str_plural($this->name);
+        $this->pk = ($this->pk) ?: 'id';
+        $this->makeSchema();
+
         $this->makeReplaceWords();
         $this->makeDirectory($this->path);
         $this->makeDirectory($this->packagePath);
@@ -178,8 +185,7 @@ class PackageCommand extends Command
         $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
         $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
 
-        $this->table = ($this->table) ?: str_plural($this->name);
-        $this->pk = ($this->pk) ?: 'id';
+
 
         $this->makeOptions();
         $this->makeViews();
@@ -188,20 +194,28 @@ class PackageCommand extends Command
     }
 
 
-    protected function makeVendorName($v='',$n='')
+    protected function makeVendorName($v='',$n='',$alreadyChecked=false)
     {
-        $this->vendor = ($v) ?: ( config('motherbox.vendor') ?: $this->ask('Name of the vendor for your composer package?') );
-        $this->name = ($n) ?: ( config('motherbox.name') ?: $this->ask('Name of your composer package?') );
-        $this->package = strtolower($this->vendor . '/'. $this->name);
+        $vendor = ($v) ?: ( config('motherbox.vendor') ?: $this->ask('Name of the vendor for your composer package?') );
+        $name = ($n) ?: ( config('motherbox.name') ?: $this->ask('Name of your composer package?') );
 
-        $this->capName = ucwords($this->name);
+        if ($alreadyChecked) {
+            $vendor = $this->ask('Name of the vendor for your composer package?');
+            $name = $this->ask('Name of your composer package?');
+        }
+
+        $this->vendor = strtolower($vendor);
+        $this->name = strtolower($name);
+
+        $this->package = strtolower($this->vendor . '/'. $this->name);
         $this->capVendor = ucwords($this->vendor);
+        $this->capName = ucwords($this->name);
         
         if ($this->confirm("Please confirm you would like this vendor/name combination : " . $this->package)) {
             return;
         }
 
-        $this->makeVendorName();        
+        $this->makeVendorName('','',true);        
     }
 
 
@@ -323,7 +337,6 @@ class PackageCommand extends Command
 
     protected function makeMigration() 
     {
-        $this->makeSchema();
         $this->table = ($this->table) ?: str_plural($this->name);
         $this->pk = ($this->pk) ?: 'id';
         $name = date('Y_m_d_His') . '_create_'.$this->table.'_table.php';
@@ -368,21 +381,38 @@ class PackageCommand extends Command
         $this->makeFile('test.stub', $this->capName.'.php', [], [], 'Tests');
     }
 
+    protected function verifyEmptyFields()
+    {   
+        if ( $this->confirm("<error>No fields specified.</error> Is this correct?") ) {
+            return true;
+        }
+
+        $this->fields = $this->ask("Add your fields now. Seperate each by a comma. Format is 'type:name:options',");
+    }
+
 
     protected function makeSchema()
     {
         $this->schema = '';
         $this->formFields = '';
-        
+
         if ( empty($this->fields) ) {
-            return;
+            if ( $this->verifyEmptyFields() ) {
+                return;
+            }
         }
 
         $result = '';
         $fields = explode(',',$this->fields);
         $j = 0;
-        $this->indexHeaders = $this->indexFields = $this->storeFields = $this->updateFields = '';
         foreach($fields as $field) {
+            $name = $type = $required = $unique = $uniqueUpdate = $require = $opts = $ret = '';
+
+            if (! stristr($field,":") ) {
+                // probably just provided the name, make it a string.
+                $field = 'string:'.$field;
+            }
+            
             $bits = explode(':', $field);
             $type = trim($bits[0]);
             $name = trim($bits[1]);
@@ -403,11 +433,17 @@ class PackageCommand extends Command
             $result .= ";\n";
 
             $this->fillable .= "'".$name."',";
-            
+
             $this->formFields .= $this->makeField($name, $type, $required);
 
-            $this->storeFields .= "\n\t\t\t'".$name."' => '". $require . $unique ."max:255|min:4',";
-            $this->updateFields .= "\n\t\t\t'".$name."' => '". $require . $uniqueUpdate."max:255|min:4',";
+            $ret = str_replace('views/','', str_replace('.field.stub', '', $this->getFieldStub($type) ) );
+            $opts = "alpha_dash|min:2|max:255";
+            if ($ret != 'text')     $opts = $ret; 
+            if ($ret == 'textarea') $opts = 'string';           
+            if ($name == 'email')   $opts = 'email';
+
+            $this->storeFields .= "\n\t\t\t'".$name."' => '". $require . $unique . $opts . "',";
+            $this->updateFields .= "\n\t\t\t'".$name."' => '". $require . $uniqueUpdate . $opts . "',";
             
             if ($j <= 2 ) {
                 $j++;
@@ -420,8 +456,6 @@ class PackageCommand extends Command
                 }
                 $this->indexFields .= $html;
             }
-
-            $name = $type = $required = $unique = $uniqueUpdate = $require = '';
         }
 
         $this->schema = substr($result,0,-1);
