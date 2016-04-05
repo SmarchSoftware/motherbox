@@ -438,7 +438,7 @@ class PackageCommand extends Command
 
             $ret = str_replace('views/','', str_replace('.field.stub', '', $this->getFieldStub($type) ) );
             $opts = "alpha_dash|min:2|max:255";
-            if ($ret != 'text')     $opts = $ret; 
+            if ( in_array($ret,['numeric','boolean']) ) $opts = $ret; 
             if ($ret == 'textarea') $opts = 'string';           
             if ($name == 'email')   $opts = 'email';
 
