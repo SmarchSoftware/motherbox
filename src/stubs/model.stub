@@ -14,6 +14,7 @@ class {{capName}} extends Model
      */
     protected $table = '{{table}}';
 
+
     /**
      * Attributes that should be mass-assignable.
      *
@@ -21,13 +22,14 @@ class {{capName}} extends Model
      */
     protected $fillable = [{{fillable}}];
 
+
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
     protected $guarded = [];
-
+    
 
     /**
      * The database table primary key.

@@ -173,13 +173,14 @@ class PackageCommand extends Command
         $this->line('<info>Stubs Path: </info> '.$this->stubPath);
         $this->line('----------------------------------');
 
+        $this->makeReplaceWords();
+
         $this->getOptions();
 
         $this->table = ($this->table) ?: str_plural($this->name);
         $this->pk = ($this->pk) ?: 'id';
         $this->makeSchema();
 
-        $this->makeReplaceWords();
         $this->makeDirectory($this->path);
         $this->makeDirectory($this->packagePath);
 
@@ -246,7 +247,6 @@ class PackageCommand extends Command
     {
         foreach($this->option() as $k => $v) {
             $this->$k = ($v) ?: config('motherbox.'.$k);
-            $this->line($k.':'.$this->$k.":".$v);
         }
     }
 
@@ -450,7 +450,7 @@ class PackageCommand extends Command
             
             if ($j <= 2 ) {
                 $j++;
-                $this->indexHeaders .= "\t<th>".$name."</th>\n";
+                $this->indexHeaders .= "\t<th>".ucfirst($name)."</th>\n";
                 $html = '<td class="hidden-xs hidden-sm">{{ $item->'.$name.' }}</td>';
                 if ($j == 0) {
                     $html = '<td>
@@ -475,6 +475,7 @@ class PackageCommand extends Command
 
     protected function makeField($name, $type, $required='', $search=[], $replace=[] )
     {
+
         $s = array_merge($this->searchWords, [ '{{fName}}', '{{fcapName}}', '{{required}}' ] );
         $r = array_merge($this->replaceWords, [ $name, ucfirst($name), $required ] );
 
