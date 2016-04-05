@@ -79,6 +79,7 @@ return [
     */
 	'table'		=> '',
 	'pk'		=> '',
-	'fields'	=> ''
+	'fields'	=> '',
+    'migrate'   => 'yes'
 
 ];

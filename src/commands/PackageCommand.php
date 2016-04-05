@@ -33,6 +33,7 @@ class PackageCommand extends Command
                             {--fillable= : Fields that should be marked as fillable in the model.}
                             {--guarded= : Fields that should be marked as guarded in the model.}
                             {--pk= : The name of the primary key.}
+                            {--migrate= : Automatically run the generated migration file? [yes/no]}
                             {--author= : Package author name for composer.}
                             {--email= : Package author email for composer.}
                             ';
@@ -245,6 +246,7 @@ class PackageCommand extends Command
     {
         foreach($this->option() as $k => $v) {
             $this->$k = ($v) ?: config('motherbox.'.$k);
+            $this->line($k.':'.$this->$k.":".$v);
         }
     }
 
@@ -341,7 +343,8 @@ class PackageCommand extends Command
         $this->pk = ($this->pk) ?: 'id';
         $name = date('Y_m_d_His') . '_create_'.$this->table.'_table.php';
         $this->makeFile('migration.stub', $name, ['{{capTable}}','{{table}}', '{{pk}}', '{{fields}}'], [ ucfirst($this->table), $this->table, $this->pk,$this->schema], 'Migrations');
-        $this->call('migrate',['--path'=>'packages\smarch\\'.$this->name.'\src\Migrations']);
+        if ($this->migrate == 'yes')
+            $this->call('migrate',['--path'=>'packages\smarch\\'.$this->name.'\src\Migrations']);
     }
 
 
