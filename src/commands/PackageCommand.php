@@ -429,7 +429,7 @@ class PackageCommand extends Command
 
                 if ($bits[$i] === 'unique') {
                     $unique = 'unique:'. $this->table .'|';
-                    $uniqueUpdate = substr($unique,0,-1) . ",".$name.',\'.$this->get("'.$this->pk."\").'|";
+                    $uniqueUpdate = substr($unique,0,-1) . ",".$name.',\'.$this->'.$this->name.".'|";
                 }
             }
 
