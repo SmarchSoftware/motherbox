@@ -391,13 +391,23 @@ class PackageCommand extends Command
                 $result .='->'.$bits[$i].'()';
                 if ($bits[$i] === 'required') {
                     $required = ", 'required' => 'required'";
+                    $require = 'required|';
+                }
+
+                if ($bits[$i] === 'unique') {
+                    $unique = 'unique:'. $this->table .'|';
+                    $uniqueUpdate = substr($unique,0,-1) . ",".$name.',\'.$this->get("'.$this->pk."\").'|";
                 }
             }
+
             $result .= ";\n";
 
             $this->fillable .= "'".$name."',";
             
             $this->formFields .= $this->makeField($name, $type, $required);
+
+            $this->storeFields .= "\n\t\t\t'".$name."' => '". $require . $unique ."max:255|min:4',";
+            $this->updateFields .= "\n\t\t\t'".$name."' => '". $require . $uniqueUpdate."max:255|min:4',";
             
             if ($j <= 2 ) {
                 $j++;
@@ -411,10 +421,7 @@ class PackageCommand extends Command
                 $this->indexFields .= $html;
             }
 
-            $this->storeFields .= "\n\t\t\t'".$name."' => 'required|unique:". $this->table ."|max:255|min:4',";
-            $this->updateFields .= "\n\t\t\t'".$name."' => 'required|unique:". $this->table .",".$name.',\'.$this->get("'.$this->pk."\")'.|max:255|min:4',";
-
-            $name = $type = $required = '';
+            $name = $type = $required = $unique = $uniqueUpdate = $require = '';
         }
 
         $this->schema = substr($result,0,-1);
