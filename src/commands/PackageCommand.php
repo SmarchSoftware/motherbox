@@ -178,6 +178,9 @@ class PackageCommand extends Command
         $this->makeFile('composer.json.stub', 'composer.json', ['{{author}}','{{email}}', '{{psrNamespace}}'], [$this->author,$this->email,str_replace('\\','\\\\',$this->capNamespace)]);
         $this->makeFile('LICENSE.stub', 'LICENSE', ['{{author}}'], [$this->author]);
 
+        $this->table = ($this->table) ?: str_plural($this->name);
+        $this->pk = ($this->pk) ?: 'id';
+
         $this->makeOptions();
         $this->makeViews();
 
@@ -331,9 +334,6 @@ class PackageCommand extends Command
 
     protected function makeModel() 
     {
-        $this->table = ($this->table) ?: str_plural($this->name);
-        $this->pk = ($this->pk) ?: 'id';
-
         $this->makeFile('model.stub', $this->capName . '.php', ['{{table}}', '{{fillable}}', '{{pk}}'], [$this->table, substr($this->fillable,0,-1), $this->pk], 'Models');
     }
 
@@ -346,8 +346,8 @@ class PackageCommand extends Command
 
     protected function makeRequests() 
     {
-        $this->makeFile('storeRequest.stub', 'StoreRequest.php', ['{{table}}','{{pk}}'], [$this->table, $this->pk ], 'Requests');
-        $this->makeFile('updateRequest.stub', 'UpdateRequest.php', ['{{table}}','{{pk}}'], [$this->table, $this->pk], 'Requests');
+        $this->makeFile('storeRequest.stub', 'StoreRequest.php', ['{{requestFields}}'], [ substr($this->storeFields,0,-1) ], 'Requests');
+        $this->makeFile('updateRequest.stub', 'UpdateRequest.php', ['{{requestFields}}'], [ substr($this->updateFields,0,-1) ], 'Requests');
     }
 
 
@@ -381,7 +381,7 @@ class PackageCommand extends Command
         $result = '';
         $fields = explode(',',$this->fields);
         $j = 0;
-        $this->indexHeaders = $this->indexFields = '';
+        $this->indexHeaders = $this->indexFields = $this->storeFields = $this->updateFields = '';
         foreach($fields as $field) {
             $bits = explode(':', $field);
             $type = trim($bits[0]);
@@ -410,6 +410,9 @@ class PackageCommand extends Command
                 }
                 $this->indexFields .= $html;
             }
+
+            $this->storeFields .= "\n\t\t\t'".$name."' => 'required|unique:". $this->table ."|max:255|min:4',";
+            $this->updateFields .= "\n\t\t\t'".$name."' => 'required|unique:". $this->table .",".$name.',\'.$this->get("'.$this->pk."\")'.|max:255|min:4',";
 
             $name = $type = $required = '';
         }

@@ -25,9 +25,7 @@ class StoreRequest extends Request
      */
     public function rules()
     {
-       return [
-            'name' => 'required|unique:{{table}}|max:255|min:4',
-            'slug' => 'required|unique:{{table}}|max:32|min:4'
+       return [{{requestFields}}            
         ];
     }
 }

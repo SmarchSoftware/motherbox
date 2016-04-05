@@ -60,11 +60,11 @@ return [
 	'model' => 'yes',
 	'routes' => 'yes',
 	'facade' => 'yes',
-	'middleware' => 'yes',
-	'policy' => 'yes',
+	'middleware' => 'no',
+	'policy' => 'no',
 	'requests' => 'yes',
 	'seed' => 'yes',
-	'test' => 'yes',
+	'test' => 'no',
 
 
     /*

@@ -24,9 +24,7 @@ class UpdateRequest extends Request
      */
     public function rules()
     {
-        return [
-            'name' => 'required|unique:{{table}},name,'.$this->get('{{pk}}').'|max:255|min:4',
-            'slug' => 'required|unique:{{table}},slug,'.$this->get('{{pk}}').'|max:32|min:4'
+        return [{{requestFields}}
         ];
 
     }
