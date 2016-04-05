@@ -1,20 +1,13 @@
 <?php
-
-Route::group( [
-	'middleware'=> config('{{name}}.route.middleware'),
-	'prefix'	=> config('{{name}}.route.prefix'),
-	'as'		=> config('{{name}}.route.as') ], function () {
-		Route::resource('{{name}}', '{{capNamespace}}\Controllers\{{capName}}Controller',
-			['names' => [
-	    		'create'	=> 'create',
-	    		'destroy'	=> 'destroy',
-	    		'edit'		=> 'edit',
-	    		'index'		=> 'index',
-	    		'show'		=> 'show',
-	    		'store'		=> 'store',
-	    		'update'	=> 'update'
-				]
-			]
-		);
-	}
+Route::resource('{{name}}', '{{capNamespace}}\Controllers\{{capName}}Controller',
+	['names' => [
+		'create'	=> 'create',
+		'destroy'	=> 'destroy',
+		'edit'		=> 'edit',
+		'index'		=> 'index',
+		'show'		=> 'show',
+		'store'		=> 'store',
+		'update'	=> 'update'
+		]
+	]
 );

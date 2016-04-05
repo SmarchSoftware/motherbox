@@ -24,16 +24,8 @@ class {{capName}}Controller extends Controller
 
     /**
      * constructor
-     * 
-     * @param boolean $acl          Whether or not ACL is enabled
-     * @param string $driver        Which ACL package to use
-     * @param string $unauthorized  Which view to use
      */
-    public function __construct() {
-        $this->acl = config('{{name}}.acl.enable');
-        $this->driver = config('{{name}}.acl.driver');
-        $this->unauthorized = config('{{name}}.views.unauthorized');
-    }
+    public function __construct() {}
 
     /**
      * Display a listing of the resource.
@@ -42,12 +34,8 @@ class {{capName}}Controller extends Controller
      */
     public function index()
     {
-        if ( $this->checkAccess( config('{{name}}.acl.index') ) ) {
-            $resources = {{capName}}::paginate( config('{{name}}.pagination', 15) );
-            return view( config('{{name}}.views.index'), compact('resources') );
-        }
-
-        return view( $this->unauthorized, ['message' => 'view {{lcNamePlural}} list'] );
+        $resources = {{capName}}::paginate('15');
+        return view( '{{name}}::index'), compact('resources') );
     }
 
     /**
@@ -57,11 +45,7 @@ class {{capName}}Controller extends Controller
      */
     public function create()
     {
-        if ( $this->checkAccess( config('{{name}}.acl.create') ) ) {
-            return view( config('{{name}}.views.create') );
-        }
-
-        return view( $this->unauthorized, ['message' => 'create new {{lcNamePlural}}'] );
+        return view('{{name}}::create');
     }
 
     /**
@@ -71,14 +55,9 @@ class {{capName}}Controller extends Controller
      */
     public function store(StoreRequest $request)
     {
-        if ( $this->checkAccess( config('{{name}}.acl.create') ) ) {
-            {{capName}}::create($request->all());        
-            return redirect()->route('{{name}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{name}} created.", 'level' => "success"] ] );
-        }
-
+        {{capName}}::create($request->all());        
         return redirect()->route('{{name}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to create {{lcNamePlural}}", 'level' => "danger"] ] );
+            ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{name}} created.", 'level' => "success"] ] );
     }
 
     /**
@@ -90,13 +69,9 @@ class {{capName}}Controller extends Controller
      */
     public function show($id)
     {
-        if ( $this->checkAccess( config('{{name}}.acl.show') ) ) {
-            $resource = {{capName}}::findOrFail($id);
-            $show = "1";
-            return view( config('{{name}}.views.edit'), compact('resource', 'show') );
-        }
-
-        return view( $this->unauthorized, ['message' => 'view existing {{lcNamePlural}}'] );
+        $resource = {{capName}}::findOrFail($id);
+        $show = "1";
+        return view('{{name}}::edit', compact('resource', 'show') );
     }
 
     /**
@@ -108,13 +83,9 @@ class {{capName}}Controller extends Controller
      */
     public function edit($id)
     {
-        if ( $this->checkAccess( config('{{name}}.acl.edit') ) ) {
-            $resource = {{capName}}::findOrFail($id);
-            $show = "0";
-            return view( config('{{name}}.views.edit'), compact('resource', 'show') );
-        }
-
-        return view( $this->unauthorized, [ 'message' => 'edit existing {{lcNamePlural}}'] );
+        $resource = {{capName}}::findOrFail($id);
+        $show = "0";
+        return view('{{name}}::edit', compact('resource', 'show') );
     }
 
     /**
@@ -126,15 +97,10 @@ class {{capName}}Controller extends Controller
      */
     public function update($id, UpdateRequest $request)
     {
-        if ( $this->checkAccess( config('{{name}}.acl.edit') ) ) {
-            ${{name}} =  {{capName}}::findOrFail($id);      
-            ${{name}}->update($request->all());        
-            return redirect()->route('{{name}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} edited.", 'level' => "success"] ] );   
-        }
-
+        ${{name}} =  {{capName}}::findOrFail($id);      
+        ${{name}}->update($request->all());        
         return redirect()->route('{{name}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to edit {{lcNamePlural}}.", 'level' => "danger"] ] );
+            ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} edited.", 'level' => "success"] ] );     
     }
 
     /**
@@ -146,14 +112,9 @@ class {{capName}}Controller extends Controller
      */
     public function destroy($id)
     {
-        if ( $this->checkAccess( config('{{name}}.acl.destroy') ) ) {
-            {{capName}}::destroy($id);
-            return redirect()->route('{{name}}.index')
-                ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} deleted.", 'level' => "warning"] ] );
-        }
-
+        {{capName}}::destroy($id);
         return redirect()->route('{{name}}.index')
-            ->with( ['flash' => ['message' => "You are not permitted to destroy {{lcNamePlural}}.", 'level' => "danger"] ] );
+           ->with( ['flash' => ['message' => "<i class='fa fa-check-square-o fa-1x'></i> Success! {{capName}} deleted.", 'level' => "warning"] ] );     
     }
 
 }

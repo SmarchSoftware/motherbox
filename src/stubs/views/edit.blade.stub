@@ -5,7 +5,7 @@
     <h1>{{ ( ($show == '0') ? 'Edit' : 'Viewing' ) }}  {{ $resource->name }}</h1>
     <hr/>
 
-    {!! Form::model($resource, ['method' => 'PATCH', 'route' => [  config('{{name}}.route.as') . 'update', $resource->id ], 'class' => 'form-horizontal']) !!}
+    {!! Form::model($resource, ['method' => 'PATCH', 'route' => [ '{{name}}.update', $resource->id ], 'class' => 'form-horizontal']) !!}
 
     {{formFields}}
 
@@ -17,7 +17,7 @@
                 {!! Form::close() !!}
 
                 <div class="col-sm-offset-2 col-sm-3">
-                    {!! Form::open(['method'=>'delete','route'=> [ config('{{name}}.route.as') . 'destroy', $resource->id] ]) !!}
+                    {!! Form::open(['method'=>'delete','route'=> ['{{name}}.destroy', $resource->id] ]) !!}
                     <button type="submit" class="btn btn-danger">
                         <i class="fa fa-trash-o fa-lg"></i> Delete
                     </button>
@@ -25,7 +25,7 @@
                 </div>
             @else
                 <i class="fa fa-pencil"></i> 
-                <a href="{{ route( config('{{name}}.route.as') . 'edit', $resource->id) }}" title="Edit '{{ $resource->name }}'">Edit '{{ $resource->name }}'</a>
+                <a href="{{ route('{{name}}.edit', $resource->id) }}" title="Edit '{{ $resource->name }}'">Edit '{{ $resource->name }}'</a>
             @endif
         </div>
     </div>

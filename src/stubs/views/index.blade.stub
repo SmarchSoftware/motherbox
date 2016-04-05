@@ -2,10 +2,10 @@
 
 @section( config('{{name}}.section') )
 
-    <h1><i class="fa fa-cog fa-fw"></i> {{ config('{{name}}.title', '{{capName}}') }}
+    <h1><i class="fa fa-cog fa-fw"></i> {{ '{{capName}}' }}
     <div class="btn-group pull-right" role="group" aria-label="..."> 
       
-        <a href="{{ route( config('{{name}}.route.as') . 'create') }}">
+        <a href="{{ route('{{name}}.create') }}">
         <button type="button" class="btn btn-info">
           <i class="fa fa-plus fa-fw"></i> 
           <span class="hidden-xs hidden-sm">Add New {{capName}}</span>
@@ -27,19 +27,19 @@
                     {{indexFields}}
                 
                     <td>
-                        <a href="{{ route( config('{{name}}.route.as') . 'show', $item->id) }}">
+                        <a href="{{ route('{{name}}.show', $item->id) }}">
                           <button type="button" class="btn btn-primary btn-xs">
                           <i class="fa fa-search fa-fw"></i> 
                           <span class="hidden-xs hidden-sm">View</span>
                           </button></a>
 
-                        <a href="{{ route( config('{{name}}.route.as') . 'edit', $item->id) }}">
+                        <a href="{{ route('{{name}}.edit', $item->id) }}">
                           <button type="button" class="btn btn-default btn-xs">
                           <i class="fa fa-pencil fa-fw"></i> 
                           <span class="hidden-xs hidden-sm">Edit</span>
                           </button></a>
 
-                        {!! Form::open(['method'=>'delete','route'=> [ config('{{name}}.route.as') . 'destroy',$item->id], 'style' => 'display:inline']) !!}
+                        {!! Form::open(['method'=>'delete','route'=> [ '{{name}}.destroy',$item->id], 'style' => 'display:inline']) !!}
                           <button type="submit" class="btn btn-danger btn-xs">
                           <i class="fa fa-trash-o fa-lg"></i> 
                           <span class="hidden-xs hidden-sm">Delete</span>

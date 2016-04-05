@@ -1,5 +1,40 @@
 <?php
 
 return [
-    // add config options here
+    /*
+    |--------------------------------------------------------------------------
+    | Add your own config options for your package needs
+    |--------------------------------------------------------------------------
+    |
+    | You can add any config options you need in this file. The two provided
+    | are used in the views so you can easily swap out layouts / themeing.
+    |
+    */
+   
+   
+    /*
+    |--------------------------------------------------------------------------
+    | Master Layout
+    |--------------------------------------------------------------------------
+    |
+    | {{capName}} comes with the form/pages needed to operate. It is assumed
+    | and expected that you already have your own master layout to use. You
+    | should specify the master layout to use here.
+    |
+    */   
+   'layout' => 'layouts.master',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Content Section name
+    |--------------------------------------------------------------------------
+    |
+    | In your master layout, this is the name of the section that your master
+    | layout uses. {{capName}} will use this name for it's sectional content.
+    |
+    | i.e. if you use yield('content') in your master layout for the position
+    | where you want {{capName}} to appear then the section is called "content".
+    |
+    */
+   'section' => 'content',
 ];
