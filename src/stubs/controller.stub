@@ -12,16 +12,9 @@ use {{capNamespace}}\Models\{{capName}};
 use {{capNamespace}}\Requests\StoreRequest;
 use {{capNamespace}}\Requests\UpdateRequest;
 
-use Smarch\Omac\OmacTrait;
 
 class {{capName}}Controller extends Controller
 {
-
-    use OmacTrait;
-
-    var $acl = false;
-    var $driver = 'laravel';
-
     /**
      * constructor
      */
@@ -35,7 +28,7 @@ class {{capName}}Controller extends Controller
     public function index()
     {
         $resources = {{capName}}::paginate('15');
-        return view( '{{name}}::index'), compact('resources') );
+        return view('{{name}}::index', compact('resources'));
     }
 
     /**
