@@ -3,7 +3,7 @@
     "description": "A Laravel 5 package generator",
     "type": "package",
     "homepage": "https://github.com/SmarchSoftware/motherbox",
-    "keywords": ["packages", "workbench", "gemerator", "laravel 5"],
+    "keywords": ["packages", "workbench", "generator", "package generator", "laravel 5"],
     "license": "MIT",
     "authors": [
         {
