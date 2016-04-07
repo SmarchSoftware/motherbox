@@ -6,7 +6,7 @@ This is probably only of use to me, but I have need of it in multiple apps so I 
 ***
 
 # Motherbox
-A package generator for Laravel 5. I used to use "workbench" all the time in laravel 4 and after not liking the ones I found and getting tired of copying/pasting/manipulating a bunch of files after running a CRUD generator, I decided to make a full package generator.
+A package generator for Laravel 5. I used to use "workbench" all the time in laravel 4 and after not liking the ones I found and getting tired of copying/pasting/manipulating a bunch of files after running a CRUD generator, I decided to make a full package generator that allows me to customize the generated files and fields for the views.
 
 ## Overview
 From a single line on the command prompt, Motherbox will generate an entire packagist.com ready package for laravel. You can use the provided stub files or you can customize the stub files to work the way you want. You can, optionally, create _(or not)_ any of the following files for your package :
