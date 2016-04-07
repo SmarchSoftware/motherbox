@@ -1,0 +1,23 @@
+{
+    "name": "smarch/motherbox",
+    "description": "A Laravel 5 package generator",
+    "type": "package",
+    "homepage": "https://github.com/SmarchSoftware/motherbox",
+    "keywords": ["packages", "workbench", "gemerator", "laravel 5"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Smarch Software",
+            "email": "packages@smarchsoft.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "~5.1",
+    },
+    "autoload": {
+        "psr-4": {
+            "Smarch\\Motherbox\\": "src/"
+        }
+    }
+}
