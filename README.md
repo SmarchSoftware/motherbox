@@ -51,24 +51,24 @@ This page is intended for installation, please check out the [wiki](https://gith
 Motherbox is a Laravel atristan command but the views it generatesuses the [HTML Forms](https://laravelcollective.com/docs/5.1/html) package from the "Laravel Collective" for Html & Form rendering so composer will install that as well if you don't already have it installed _(you probably do...or should)_. Once composer has installed the necessary packages for Motherbox to function you need to open your laravel config page for service providers and add Motherbox _(and if necessary the Laravel Collective Html provider)_. To properly function you need to have both service providers referenced : [HTML Forms](https://laravelcollective.com/docs/5.1/html) and Motherbox.
 
 *config/app.php*
-       
+```php
        /*
         * Third Party Service Providers
         */
         Collective\Html\HtmlServiceProvider::class, // For Motherbox to function
         Smarch\Motherbox\MotherboxServiceProvider::class, // For Motherbox
-
+```
 #### :pencil: Facades
 Next you will need to add the Forms Facades to your config app file. Motherbox has no facade as it is only an artisan command.
 
 *config/app.php*
-
+```php
         /*
         * Third Party Service Providers
         */
         'Form'  => Collective\Html\FormFacade::class,	// required for Motherbox Forms
         'HTML'  => Collective\Html\HtmlFacade::class,	// required for Motherbox Forms
-
+```
 #### :card_index: Publishing Stub and config files
 
 If you wish to use the motherbox config options or customize the stub files for your own needs you will need to publish the files. From your command prompt (wherever you run your artisan commands) enter the following command <kbd>php artisan vendor:publish --provider=Smarch\Motherbox\MotherboxServiceProvider</kbd>. This will create the Motherbox config file and puts the stubs files in <kbd>ROOT\resources\motherbox\stubs</kbd>.
