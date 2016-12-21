@@ -15,7 +15,7 @@ class MotherboxServiceProvider extends ServiceProvider
     {
         // config
         $this->publishes([
-            __DIR__.'/Config/motherbox.php' => config_path('motherbox.php')
+            __DIR__.'/config/motherbox.php' => config_path('motherbox.php')
         ], 'config');
 
         // stubs
@@ -32,7 +32,7 @@ class MotherboxServiceProvider extends ServiceProvider
     public function register()
     {
         // Merge config files
-        $this->mergeConfigFrom(__DIR__.'/Config/motherbox.php','motherbox');
+        $this->mergeConfigFrom(__DIR__.'/config/motherbox.php','motherbox');
 
         $this->commands(
             Commands\PackageCommand::class
